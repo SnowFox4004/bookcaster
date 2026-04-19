@@ -31,6 +31,7 @@ class Qwen3TTS:
             traits = {}
 
         for chapter in tqdm(chapters):
+
             script = chapter.script
             characters = set(speech["speaker"] for speech in script)
             character_speech = {character: [] for character in characters}

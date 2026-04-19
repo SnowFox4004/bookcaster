@@ -76,6 +76,13 @@ class Bookcaster:
         await asyncio.wait(tsks)
         logger.info(f"Generated {len(self.chapters)} scripts")
 
+        json.dump(
+            [chapter.script for chapter in self.chapters],
+            open("./data/xjxz/chapters.json", "w", encoding="utf-8"),
+            ensure_ascii=False,
+            indent=4,
+        )
+
         await self.get_voice_prompts(self.chapters)
         logger.info(f"Generated {len(self.character_traits)} voice prompts")
 
@@ -85,17 +92,22 @@ class Bookcaster:
             ensure_ascii=False,
             indent=4,
         )
-        json.dump(
-            [chapter.script for chapter in self.chapters],
-            open("./data/xjxz/chapters.json", "w", encoding="utf-8"),
-            ensure_ascii=False,
-            indent=4,
-        )
 
-        await self.providers["tts"].tts(self.chapters, self.character_traits)
+        await self.providers["tts"].tts(
+            await self.get_tts_chapters(), self.character_traits
+        )
 
         await self.save_results()
         logger.success("Podcast finished")
+
+    async def get_tts_chapters(self):
+        chapters = filter(
+            lambda x: not os.path.exists(
+                os.path.join(self.path, "audio", x.file_name + ".mp3")
+            ),
+            self.chapters,
+        )
+        return list(chapters)
 
     async def save_results(self):
         os.makedirs(os.path.join(self.path, "audio"), exist_ok=True)
@@ -106,6 +118,15 @@ class Bookcaster:
                 await f.write(chapter.audio)
 
     async def get_script(self, chapter: Chapter):
+        os.makedirs(os.path.join(self.path, "scripts"), exist_ok=True)
+        script_file_name = os.path.join(
+            self.path, "scripts", chapter.file_name + ".json"
+        )
+        if os.path.exists(script_file_name):
+            logger.info(f"{chapter.file_name}'s script already exists, skip")
+            chapter.script = json.load(open(script_file_name, "r", encoding="utf-8"))
+            return 0
+
         result = await self.providers["llm"].generate(
             prompt=GET_SPEAKER_PROMPT.format(
                 text=chapter.raw_text,
@@ -130,7 +151,12 @@ class Bookcaster:
         chapter.script = list(filter(lambda x: x.get("content"), chapter.script))
 
         chapter.script = self.concatenate_same_speaker_speech(chapter.script)
-
+        json.dump(
+            chapter.script,
+            open(script_file_name, "w", encoding="utf-8"),
+            ensure_ascii=False,
+            indent=4,
+        )
         return 0
 
     def concatenate_same_speaker_speech(self, script: list[dict[str, str]]):
@@ -141,7 +167,9 @@ class Bookcaster:
                 continue
 
             if script[i]["speaker"] == script[i - 1]["speaker"]:
-                new_script[-1]["content"] += script[i]["content"]
+                new_script[-1]["content"] += " " + script[i]["content"]
+            else:
+                new_script.append(script[i])
         return new_script
 
     async def get_voice_prompts(self, chapters: list[Chapter]):
