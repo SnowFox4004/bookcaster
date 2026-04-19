@@ -65,6 +65,7 @@ Qwen3TTS(
 
 ```bash
 uv run src/bookcaster/main.py
+```
 
 ## 输出结果
 
