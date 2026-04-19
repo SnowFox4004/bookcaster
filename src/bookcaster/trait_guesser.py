@@ -25,7 +25,7 @@ class AgeGenderGuesser(TraitGuesser):
         guess the age and gender of a character
         """
         # characters = set(speech.get("speaker") for speech in chapter.script)
-        logger.info(f'Guessing age and gender for {", ".join(characters)}')
+        logger.info(f"Guessing age and gender for {characters}")
         response = await self.llm.generate(
             AGE_GENDER_TRAIT_PROMPT.format(text=text, characters=", ".join(characters)),
             schema={
@@ -40,7 +40,7 @@ class AgeGenderGuesser(TraitGuesser):
                         },
                     }
                 },
-            },
+            },  # type:ignore
         )
         response = json.loads(response)
 

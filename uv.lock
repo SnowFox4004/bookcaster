@@ -39,9 +39,11 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiofiles" },
+    { name = "ffmpeg-python" },
     { name = "httpx" },
     { name = "loguru" },
     { name = "openai" },
+    { name = "pydub" },
     { name = "requests" },
     { name = "tqdm" },
 ]
@@ -49,9 +51,11 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "aiofiles", specifier = ">=25.1.0" },
+    { name = "ffmpeg-python", specifier = ">=0.2.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "openai", specifier = ">=2.32.0" },
+    { name = "pydub", specifier = ">=0.25.1" },
     { name = "requests", specifier = ">=2.33.1" },
     { name = "tqdm", specifier = ">=4.67.3" },
 ]
@@ -154,6 +158,27 @@ source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
 sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/fc/f8/98eea607f65de6527f8a2e8885fc8015d3e6f5775df186e443e0964a11c3/distro-1.9.0.tar.gz", hash = "sha256:2fa77c6fd8940f116ee1d6b94a2f90b13b5ea8d019b98bc8bafdcabcdd9bdbed", size = 60722, upload-time = "2023-12-24T09:54:32.31Z" }
 wheels = [
     { url = "https://pypi.tuna.tsinghua.edu.cn/packages/12/b3/231ffd4ab1fc9d679809f356cebee130ac7daa00d6d6f3206dd4fd137e9e/distro-1.9.0-py3-none-any.whl", hash = "sha256:7bffd925d65168f85027d8da9af6bddab658135b840670a223589bc0c8ef02b2", size = 20277, upload-time = "2023-12-24T09:54:30.421Z" },
+]
+
+[[package]]
+name = "ffmpeg-python"
+version = "0.2.0"
+source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
+dependencies = [
+    { name = "future" },
+]
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/dd/5e/d5f9105d59c1325759d838af4e973695081fbbc97182baf73afc78dec266/ffmpeg-python-0.2.0.tar.gz", hash = "sha256:65225db34627c578ef0e11c8b1eb528bb35e024752f6f10b78c011f6f64c4127", size = 21543, upload-time = "2019-07-06T00:19:08.989Z" }
+wheels = [
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/d7/0c/56be52741f75bad4dc6555991fabd2e07b432d333da82c11ad701123888a/ffmpeg_python-0.2.0-py3-none-any.whl", hash = "sha256:ac441a0404e053f8b6a1113a77c0f452f1cfc62f6344a769475ffdc0f56c23c5", size = 25024, upload-time = "2019-07-06T00:19:07.215Z" },
+]
+
+[[package]]
+name = "future"
+version = "1.0.0"
+source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/a7/b2/4140c69c6a66432916b26158687e821ba631a4c9273c474343badf84d3ba/future-1.0.0.tar.gz", hash = "sha256:bd2968309307861edae1458a4f8a4f3598c03be43b97521076aebf5d94c07b05", size = 1228490, upload-time = "2024-02-21T11:52:38.461Z" }
+wheels = [
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/da/71/ae30dadffc90b9006d77af76b393cb9dfbfc9629f339fc1574a1c52e6806/future-1.0.0-py3-none-any.whl", hash = "sha256:929292d34f5872e70396626ef385ec22355a1fae8ad29e1a734c3e43f9fbc216", size = 491326, upload-time = "2024-02-21T11:52:35.956Z" },
 ]
 
 [[package]]
@@ -394,6 +419,15 @@ wheels = [
     { url = "https://pypi.tuna.tsinghua.edu.cn/packages/ee/b2/c28419aa9fc8055f4ac8e801d1d11c6357351bfa4321ed9bafab3eb98087/pydantic_core-2.46.2-graalpy312-graalpy250_312_native-macosx_11_0_arm64.whl", hash = "sha256:fb3ec2c7f54c07b30d89983ce78dc32c37dd06a972448b8716d609493802d628", size = 1937059, upload-time = "2026-04-17T09:10:53.554Z" },
     { url = "https://pypi.tuna.tsinghua.edu.cn/packages/30/ce/cd0824a2db213dc17113291b7a09b9b0ccd9fbf97daa4b81548703341baf/pydantic_core-2.46.2-graalpy312-graalpy250_312_native-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:130a6c837d819ef33e8c2bf702ed2c3429237ea69807f1140943d6f4bdaf52fa", size = 1997278, upload-time = "2026-04-17T09:12:23.784Z" },
     { url = "https://pypi.tuna.tsinghua.edu.cn/packages/c9/69/47283fe3c0c967d3e9e9cd6c42b70907610c8a6f8d6e8381f1bb55f8006c/pydantic_core-2.46.2-graalpy312-graalpy250_312_native-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c2e25417cec5cd9bddb151e33cb08c50160f317479ecc02b22a95ec18f8fe004", size = 2147096, upload-time = "2026-04-17T09:12:43.124Z" },
+]
+
+[[package]]
+name = "pydub"
+version = "0.25.1"
+source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/fe/9a/e6bca0eed82db26562c73b5076539a4a08d3cffd19c3cc5913a3e61145fd/pydub-0.25.1.tar.gz", hash = "sha256:980a33ce9949cab2a569606b65674d748ecbca4f0796887fd6f46173a7b0d30f", size = 38326, upload-time = "2021-03-10T02:09:54.659Z" }
+wheels = [
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/a6/53/d78dc063216e62fc55f6b2eebb447f6a4b0a59f55c8406376f76bf959b08/pydub-0.25.1-py2.py3-none-any.whl", hash = "sha256:65617e33033874b59d87db603aa1ed450633288aefead953b30bded59cb599a6", size = 32327, upload-time = "2021-03-10T02:09:53.503Z" },
 ]
 
 [[package]]

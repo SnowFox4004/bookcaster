@@ -1,16 +1,18 @@
-import os
-import aiofiles
-from dataclasses import dataclass
 import asyncio
 import json
+import os
+from dataclasses import dataclass
+
+import aiofiles
 from loguru import logger
 from tqdm import tqdm
 
-from bookcaster.utils import Chapter
 from bookcaster.llms import LLMProvider
-from bookcaster.trait_guesser import AgeGenderGuesser
 from bookcaster.prompts import *
-
+from bookcaster.trait_guesser import AgeGenderGuesser
+from bookcaster.tts.qwen3tts import Qwen3TTS
+from bookcaster.utils import Chapter
+from typing import Any
 
 class Bookcaster:
 
@@ -27,15 +29,21 @@ class Bookcaster:
                 llm=self.providers["llm"],
             )
 
+        if self.providers.get("qwen3tts", None) is None:
+            self.providers["tts"] = Qwen3TTS(
+                api_key="nothingbeatsajet2holiday",
+                api_base="http://127.0.0.1:8000/v1",
+            )
+
     def __init__(
         self,
         path: str,
-        providers: dict[str, str] = None,
+        providers: dict[str, Any] | None = None,
     ):
 
         self.path = path
         self.chapters = []
-        self.providers = providers
+        self.providers = providers if providers is not None else {}
         self.character_traits = {}
 
         self._init_default_providers()
@@ -56,7 +64,7 @@ class Bookcaster:
                     idx=idx,
                     raw_text=raw_text,
                     file_name=chapter,
-                    script=None,
+                    script=list(),
                 )
                 self.chapters.append(new_chapter)
         logger.info(f"Read {len(self.chapters)} chapters")
@@ -84,6 +92,19 @@ class Bookcaster:
             indent=4,
         )
 
+        await self.providers["tts"].tts(self.chapters, self.character_traits)
+
+        await self.save_results()
+        logger.success("Podcast finished")
+
+    async def save_results(self):
+        os.makedirs(os.path.join(self.path, "audio"), exist_ok=True)
+        for chapter in self.chapters:
+            async with aiofiles.open(
+                os.path.join(self.path, "audio", chapter.file_name + ".mp3"), "wb"
+            ) as f:
+                await f.write(chapter.audio)
+
     async def get_script(self, chapter: Chapter):
         result = await self.providers["llm"].generate(
             prompt=GET_SPEAKER_PROMPT.format(
@@ -105,7 +126,23 @@ class Bookcaster:
         )
         # logger.info(result)
         chapter.script = json.loads(result)
+
+        chapter.script = list(filter(lambda x: x.get("content"), chapter.script))
+
+        chapter.script = self.concatenate_same_speaker_speech(chapter.script)
+
         return 0
+
+    def concatenate_same_speaker_speech(self, script: list[dict[str, str]]):
+        new_script = list()
+        for i in range(len(script)):
+            if i == 0:
+                new_script.append(script[i])
+                continue
+
+            if script[i]["speaker"] == script[i - 1]["speaker"]:
+                new_script[-1]["content"] += script[i]["content"]
+        return new_script
 
     async def get_voice_prompts(self, chapters: list[Chapter]):
         for chapter in tqdm(chapters):
@@ -134,7 +171,7 @@ if __name__ == "__main__":
         path="./data/xjxz",
         providers={
             "llm": LLMProvider(
-                model="qwen3.5-9b-uncensored-hauhaucs-aggressive",
+                model="qwen3.5-4b",
                 api_key="lmstudio",
                 base_url="http://snowfox4004.local:1234/v1/",
             ),

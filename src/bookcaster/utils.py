@@ -7,3 +7,4 @@ class Chapter:
     file_name: str
     raw_text: str
     script: list[dict[str, str]]
+    audio: bytes | None = None
