@@ -74,7 +74,7 @@ uv run src/bookcaster/main.py
 
 ## 项目结构
 
-```
+```bash
 src/
 ├── bookcaster/              # 主程序包
 │   ├── __init__.py
